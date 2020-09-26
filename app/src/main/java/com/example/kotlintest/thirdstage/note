@@ -1,0 +1,42 @@
+关于协变与逆变的概念及来源
+例如： 在Java中
+/*
+    List<String> list = new ArrayList<>();
+    List<Object> list2 = list; 编译失败
+    编译为什么会出错呢？
+      假设这样赋值是没有错的，把String类型的放到Object中
+      此时，list2也能调用list2.add(new Date())，因为声明的是Object类型
+      但是，当我调用get方法时，list2.get(0),它会得到什么类型的呢？
+      list2实际指向的时List<String>类型的对象,所以得到的就是String类型的
+      很明显，这是不行的，传入的是Data的对象(Object对象)，而得到的是String类型的对象
+    /** 可以看一下Test2.java测试类 **/
+
+*/
+
+List<Object> list1, List<String> list2, List<? extends Object> list3, '?'是通配符
+list2不是list1的子类型， list2 是 list3 的子类型
+可以看下Collection类中的addAll方法是怎么写的
+boolean addAll(Collection<? extends E> c);
+而不是boolean addAll(Collection<E> c);
+例如：
+/*
+    public void copyAll(Collection<Object> to, Collection<String> from) {
+        to.addAll(from);
+    }
+    可以看一下Test.java这个测试类,和最上面的有什么不同呢？
+    区别在于：get方法得到的也是Object类型的，而不是String类型的
+    为什么会这样呢？
+    就测试类来说，不能把'<? extends E>'看成是String类型，因为'?'还可能是Integer，Long...
+    在**读取**（调用get方法）时，并不会读取到'<? extends E>'的'?'类型(真正的类型)，而是读取'E'类型
+*/
+这个就叫做协变 ---> 用于读取
+
+/*
+  我们如果只从中读取数据，而不往里面写入内容，那么这样的对象叫做生产者；
+  如果我们只向里面写入数据，而不从中读取数据，那么这样的对象叫做消费者。
+  生产者使用'? extends E'; 消费者使用'? super E'.
+*/
+
+
+List<? super String> list  ---> 逆变  ---用于写入
+'?'类型表示String的父类(上界)
